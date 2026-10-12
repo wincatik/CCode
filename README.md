@@ -35,7 +35,7 @@ APK 0.2.5 содержит:
 
 ## Скачать
 
-- [Скачать CCode 0.2.5 APK](https://github.com/wincatik/CCode/releases/download/v0.2.5/CCode-0.2.5.apk)
+- [Скачать CCode 0.2.5 APK](https://github.com/wincatik/CCode/raw/refs/heads/main/releases/CCode-0.2.5.apk)
 - [Открыть все Releases](https://github.com/wincatik/CCode/releases)
 
 Для установки APK разреши установку приложений из неизвестных источников в настройках Android. Это тестовая debug-сборка.
