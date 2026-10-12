@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#08090d" />
+  <meta name="description" content="CCode — локальный ИИ-ассистент для мобильной разработки и кодинга." />
+  <title>CCode — локальный ИИ для кодинга</title>
+  <style>
+    :root { --bg:#08090d; --panel:#10121a; --panel2:#151824; --text:#f5f7fb; --muted:#9da4b5; --line:rgba(255,255,255,.1); --accent:#9b7cff; --accent2:#6d5ce7; --green:#82e6b2; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; color:var(--text); background:radial-gradient(circle at 75% -10%, rgba(121,92,255,.22), transparent 34rem), var(--bg); font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height:1.5; }
+    a { color:inherit; text-decoration:none; }
+    .wrap { width:min(1120px, calc(100% - 40px)); margin:auto; }
+    header { display:flex; justify-content:space-between; align-items:center; padding:24px 0; }
+    .brand { display:flex; align-items:center; gap:12px; font-weight:800; letter-spacing:-.04em; font-size:1.25rem; }
+    .mark { width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:linear-gradient(135deg,var(--accent),#4d3fb2); box-shadow:0 0 32px rgba(155,124,255,.35); font-weight:900; }
+    nav { display:flex; gap:24px; color:var(--muted); font-size:.93rem; }
+    nav a:hover { color:var(--text); }
+    .hero { padding:92px 0 86px; display:grid; grid-template-columns:1.15fr .85fr; gap:70px; align-items:center; }
+    .eyebrow { color:var(--green); text-transform:uppercase; letter-spacing:.16em; font-size:.73rem; font-weight:800; }
+    h1 { margin:16px 0 20px; max-width:720px; font-size:clamp(3.1rem, 8vw, 6.6rem); line-height:.93; letter-spacing:-.075em; }
+    .gradient { background:linear-gradient(110deg,#fff 15%,#baa9ff 80%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    .lead { color:var(--muted); max-width:610px; font-size:1.16rem; }
+    .actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:30px; }
+    .button { display:inline-flex; align-items:center; justify-content:center; min-height:48px; padding:0 19px; border:1px solid var(--line); border-radius:13px; font-weight:750; transition:.2s ease; }
+    .button.primary { color:#0b0910; background:var(--text); border-color:var(--text); }
+    .button.secondary { background:rgba(255,255,255,.04); }
+    .button:hover { transform:translateY(-2px); border-color:rgba(155,124,255,.7); box-shadow:0 12px 30px rgba(0,0,0,.25); }
+    .terminal { background:linear-gradient(145deg,rgba(24,27,41,.96),rgba(10,11,16,.96)); border:1px solid var(--line); border-radius:24px; padding:18px; box-shadow:0 24px 80px rgba(0,0,0,.38); transform:rotate(2deg); }
+    .dots { display:flex; gap:6px; padding:3px 0 15px; border-bottom:1px solid var(--line); }
+    .dot { width:8px; height:8px; border-radius:50%; background:#666b7d; } .dot:first-child{background:#ff6e83}.dot:nth-child(2){background:#ffd36e}.dot:last-child{background:#74e2a6}
+    pre { margin:22px 8px 8px; overflow:auto; color:#d7d9e4; font:500 .9rem/1.8 ui-monospace,SFMono-Regular,Menlo,monospace; }
+    .purple { color:#bcaaff; } .blue { color:#8bc8ff; } .green { color:#9fe8c1; }
+    section { padding:80px 0; border-top:1px solid var(--line); }
+    .section-head { display:flex; justify-content:space-between; align-items:end; gap:24px; margin-bottom:28px; }
+    h2 { margin:0; font-size:clamp(2rem,4vw,3.2rem); letter-spacing:-.055em; line-height:1; }
+    .section-head p { max-width:430px; color:var(--muted); margin:0; }
+    .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+    .card { padding:24px; min-height:190px; background:linear-gradient(160deg,rgba(255,255,255,.055),rgba(255,255,255,.018)); border:1px solid var(--line); border-radius:19px; }
+    .icon { width:38px; height:38px; display:grid; place-items:center; border-radius:12px; background:rgba(155,124,255,.14); color:#c6b9ff; margin-bottom:21px; font-weight:900; }
+    h3 { margin:0 0 8px; font-size:1.06rem; } .card p { margin:0; color:var(--muted); font-size:.94rem; }
+    .download { display:flex; justify-content:space-between; align-items:center; gap:24px; padding:30px; background:linear-gradient(110deg,rgba(155,124,255,.18),rgba(130,230,178,.08)); border:1px solid rgba(155,124,255,.28); border-radius:22px; }
+    .download p { color:var(--muted); margin:8px 0 0; }
+    footer { padding:30px 0 42px; color:var(--muted); display:flex; justify-content:space-between; gap:20px; font-size:.87rem; }
+    @media (max-width:760px) { .wrap{width:min(100% - 28px,1120px)} nav{display:none}.hero{padding:55px 0 65px; grid-template-columns:1fr; gap:40px}.terminal{transform:none}.grid{grid-template-columns:1fr}.section-head,.download,footer{display:block}.section-head p{margin-top:14px}.download .button{margin-top:20px} footer > *{margin-top:8px} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="brand" href="#top"><span class="mark">C</span><span>CCode</span></a>
+      <nav><a href="#features">Возможности</a><a href="#download">Скачать</a><a href="https://github.com/wincatik/CCode">GitHub</a></nav>
+    </header>
+    <main id="top">
+      <section class="hero" style="border:0; padding-top:86px">
+        <div>
+          <div class="eyebrow">Кодинг без облака</div>
+          <h1>Твой ИИ.<br><span class="gradient">Твой код.</span></h1>
+          <p class="lead">CCode — локальный Android-ассистент для создания скриптов, Godot-проектов и многофайловых приложений прямо на телефоне.</p>
+          <div class="actions"><a class="button primary" href="https://github.com/wincatik/CCode/releases/latest">Скачать APK</a><a class="button secondary" href="https://github.com/wincatik/CCode">Открыть исходники</a></div>
+        </div>
+        <div class="terminal" aria-label="Пример работы CCode"><div class="dots"><i class="dot"></i><i class="dot"></i><i class="dot"></i></div><pre><span class="purple">ccode</span> <span class="blue">build</span> --project godot
+
+<span class="green">✓</span> Анализирую задачу
+<span class="green">✓</span> Создаю main.gd
+<span class="green">✓</span> Создаю player.gd
+<span class="green">✓</span> Проверяю файлы
+
+<span class="purple">Проект готов.</span>
+<span class="green">2 файла · 4.8 KB</span></pre></div>
+      </section>
+      <section id="features">
+        <div class="section-head"><h2>Сделан для<br>реальных задач</h2><p>Не просто чат с текстом. CCode понимает проекты, файлы и процесс разработки.</p></div>
+        <div class="grid">
+          <article class="card"><div class="icon">⌘</div><h3>Локальная модель</h3><p>Code 1.0 и Code 1.0 Lite работают на устройстве без обязательной отправки кода в облако.</p></article>
+          <article class="card"><div class="icon">▤</div><h3>Настоящие файлы</h3><p>Генерация отдельных файлов, ZIP-проектов и экспорт чатов в формате .ccode.</p></article>
+          <article class="card"><div class="icon">↗</div><h3>Рабочий процесс</h3><p>Панель активности показывает анализ, создание файлов, поиск документации и результат.</p></article>
+          <article class="card"><div class="icon">⌕</div><h3>Документация в сети</h3><p>Когда нужен свежий гайд, CCode может искать реальные страницы и показывать источники.</p></article>
+          <article class="card"><div class="icon">◫</div><h3>Godot и Python</h3><p>Подходит для GDScript 2.0, Python и других языков, на которых ты создаёшь свои проекты.</p></article>
+          <article class="card"><div class="icon">▣</div><h3>Для телефона</h3><p>Минималистичный тёмный интерфейс, оптимизация под устройства с 4 ГБ оперативной памяти.</p></article>
+        </div>
+      </section>
+      <section id="download"><div class="download"><div><h2>Попробуй CCode</h2><p>Официальные сборки и исходный код находятся на GitHub.</p></div><a class="button primary" href="https://github.com/wincatik/CCode/releases/latest">Перейти к релизам →</a></div></section>
+    </main>
+    <footer><span>© 2026 CCode</span><span>Локальный ИИ для мобильной разработки</span></footer>
+  </div>
+</body>
+</html>
