@@ -1,0 +1,9 @@
+# Local Gradle and Android Studio state
+.gradle/
+**/build/
+.idea/
+local.properties
+*.iml
+captures/
+.externalNativeBuild/
+.cxx/

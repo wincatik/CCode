@@ -47,7 +47,10 @@ APK 0.2.5 содержит:
 ## Исходный код
 
 - [Репозиторий GitHub](https://github.com/wincatik/CCode)
+- [Полный исходный Android-проект](https://github.com/wincatik/CCode/tree/main/android-app)
 - [Страница Issues](https://github.com/wincatik/CCode/issues)
+
+Исходный проект сохранён в папке `android-app`. В него входят Kotlin/Compose-интерфейс, C++/JNI-мост, настройки Gradle и native-библиотеки, необходимые для сборки. Временные папки `build/` и `.gradle/` намеренно исключены.
 
 ## Техническая основа
 

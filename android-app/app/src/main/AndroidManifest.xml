@@ -1,0 +1,26 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <application android:theme="@style/Theme.CCode" android:label="CCode" android:icon="@drawable/ic_launcher_ccode" android:roundIcon="@drawable/ic_launcher_ccode" android:allowBackup="false" android:supportsRtl="true">
+        <activity android:name=".MainActivity" android:exported="true" />
+        <activity-alias android:name=".CCodeLauncher" android:enabled="true" android:exported="true" android:icon="@drawable/ic_launcher_ccode" android:roundIcon="@drawable/ic_launcher_ccode" android:targetActivity=".MainActivity" android:label="CCode">
+            <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter>
+        </activity-alias>
+        <activity-alias android:name=".ClaudeLauncher" android:enabled="false" android:exported="true" android:icon="@drawable/ic_launcher_claude" android:roundIcon="@drawable/ic_launcher_claude" android:targetActivity=".MainActivity" android:label="CCode">
+            <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter>
+        </activity-alias>
+        <activity-alias android:name=".GeminiLauncher" android:enabled="false" android:exported="true" android:icon="@drawable/ic_launcher_gemini" android:roundIcon="@drawable/ic_launcher_gemini" android:targetActivity=".MainActivity" android:label="CCode">
+            <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter>
+        </activity-alias>
+        <activity-alias android:name=".ChatGptLauncher" android:enabled="false" android:exported="true" android:icon="@drawable/ic_launcher_chatgpt" android:roundIcon="@drawable/ic_launcher_chatgpt" android:targetActivity=".MainActivity" android:label="CCode">
+            <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter>
+        </activity-alias>
+        <receiver android:name=".CCodeWidget" android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/ccode_widget_info" />
+        </receiver>
+    </application>
+</manifest>
