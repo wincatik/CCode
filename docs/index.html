@@ -16,7 +16,8 @@
     header { display:flex; justify-content:space-between; align-items:center; padding:24px 0; }
     .brand { display:flex; align-items:center; gap:12px; font-weight:800; letter-spacing:-.04em; font-size:1.25rem; }
     .mark { width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:linear-gradient(135deg,var(--accent),#4d3fb2); box-shadow:0 0 32px rgba(155,124,255,.35); font-weight:900; }
-    nav { display:flex; gap:24px; color:var(--muted); font-size:.93rem; }
+    nav { display:flex; gap:24px; color:var(--muted); font-size:.93rem; align-items:center; }
+    nav .telegram-link { color:#0b0910; background:var(--green); border-radius:10px; padding:7px 12px; font-weight:800; }
     nav a:hover { color:var(--text); }
     .hero { padding:92px 0 86px; display:grid; grid-template-columns:1.15fr .85fr; gap:70px; align-items:center; }
     .eyebrow { color:var(--green); text-transform:uppercase; letter-spacing:.16em; font-size:.73rem; font-weight:800; }
@@ -51,7 +52,7 @@
   <div class="wrap">
     <header>
       <a class="brand" href="#top"><span class="mark">C</span><span>CCode</span></a>
-      <nav><a href="#features">Возможности</a><a href="#download">Скачать</a><a href="https://github.com/wincatik/CCode">GitHub</a><a href="https://t.me/ccodeaiok" target="_blank" rel="noopener">Telegram</a></nav>
+      <nav><a href="#features">Возможности</a><a class="telegram-link" href="https://t.me/ccodeaiok" target="_blank" rel="noopener">Telegram</a><a href="#download">Скачать</a><a href="https://github.com/wincatik/CCode">GitHub</a></nav>
     </header>
     <main id="top">
       <section class="hero" style="border:0; padding-top:86px">
