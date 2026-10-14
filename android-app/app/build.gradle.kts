@@ -6,7 +6,7 @@ plugins {
 
 android { namespace = "com.ccode.code"; compileSdk = 35
     defaultConfig {
-        applicationId = "com.ccode.code"; minSdk = 31; targetSdk = 35; versionCode = 16; versionName = "0.2.5"
+        applicationId = "com.ccode.code"; minSdk = 31; targetSdk = 35; versionCode = 17; versionName = "0.2.6"
         ndk { abiFilters += "arm64-v8a" }
         externalNativeBuild { cmake { cppFlags += "-std=c++17" } }
     }
@@ -27,4 +27,5 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
+    implementation("com.android.tools.build:apksig:8.5.2")
 }

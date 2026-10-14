@@ -17,8 +17,11 @@ static llama_model * g_model = nullptr;
 static llama_context * g_ctx = nullptr;
 static llama_sampler * g_sampler = nullptr;
 static std::atomic<bool> g_cancelRequested{false};
-static constexpr uint32_t kContextSize = 1536;
-static constexpr uint32_t kBatchSize = 256;
+// 1536 токенов обрывает многофайловые Godot/HTML-проекты. 3072 оставляет
+// достаточно места для истории и кода, оставаясь приемлемым для 4 ГБ ОЗУ.
+static constexpr uint32_t kContextSize = 3072;
+// Уменьшенный batch снижает кратковременные пики CPU/RAM на телефонах.
+static constexpr uint32_t kBatchSize = 128;
 
 static size_t completeUtf8Prefix(const std::string & text) {
     size_t i = 0;
@@ -66,7 +69,9 @@ Java_com_ccode_code_LocalCodeEngine_nativeLoadModel(JNIEnv * env, jobject, jstri
     auto contextParams = llama_context_default_params();
     contextParams.n_ctx = kContextSize;
     contextParams.n_batch = kBatchSize;
-    constexpr int cpuThreads = 6;
+    // Шесть потоков забирали все доступные big-ядерные ресурсы. Четыре дают
+    // более ровную нагрузку и оставляют CPU для интерфейса и ОС.
+    constexpr int cpuThreads = 4;
     contextParams.n_threads = cpuThreads;
     contextParams.n_threads_batch = cpuThreads;
     g_ctx = llama_init_from_model(g_model, contextParams);
@@ -145,7 +150,7 @@ Java_com_ccode_code_LocalCodeEngine_nativeGenerateStreaming(JNIEnv * env, jobjec
     const size_t userStart = input.find(marker);
     const size_t userLength = userStart == std::string::npos ? input.size() : input.size() - userStart - marker.size();
     const bool codeRequest = input.find("python") != std::string::npos || input.find("Python") != std::string::npos || input.find("Godot") != std::string::npos || input.find("гдскрипт") != std::string::npos || input.find("скрипт") != std::string::npos || input.find("игр") != std::string::npos || input.find("полный файл") != std::string::npos || input.find("код") != std::string::npos;
-    const int requestedMaxTokens = codeRequest ? 512 : (userLength < 80 ? 48 : (userLength < 180 ? 160 : 256));
+    const int requestedMaxTokens = codeRequest ? 768 : (userLength < 80 ? 64 : (userLength < 180 ? 192 : 320));
     const int maxNewTokens = std::max(1, std::min(requestedMaxTokens, static_cast<int>(contextLimit) - tokenCount - 1));
     jclass listenerClass = listener ? env->GetObjectClass(listener) : nullptr;
     jmethodID onToken = listenerClass ? env->GetMethodID(listenerClass, "onToken", "(Ljava/lang/String;)V") : nullptr;
