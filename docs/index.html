@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#08090d" />
-  <meta name="description" content="CCode — локальный ИИ-ассистент для мобильной разработки и кодинга." />
-  <title>CCode — локальный ИИ для кодинга</title>
+   <meta name="description" content="CCode — a local AI assistant for mobile development and coding." />
+  <title>CCode — local AI for coding</title>
   <style>
     :root { --bg:#08090d; --panel:#10121a; --panel2:#151824; --text:#f5f7fb; --muted:#9da4b5; --line:rgba(255,255,255,.1); --accent:#9b7cff; --accent2:#6d5ce7; --green:#82e6b2; }
     * { box-sizing:border-box; }
@@ -52,40 +52,40 @@
   <div class="wrap">
     <header>
       <a class="brand" href="#top"><span class="mark">C</span><span>CCode</span></a>
-      <nav><a href="#features">Возможности</a><a class="telegram-link" href="https://t.me/ccodeaiok" target="_blank" rel="noopener">Telegram</a><a href="#download">Скачать</a><a href="https://github.com/wincatik/CCode">GitHub</a></nav>
+       <nav><a href="#features">Features</a><a class="telegram-link" href="https://t.me/ccodeaiok" target="_blank" rel="noopener">Telegram</a><a href="#download">Download</a><a href="https://github.com/wincatik/CCode">GitHub</a></nav>
     </header>
     <main id="top">
       <section class="hero" style="border:0; padding-top:86px">
         <div>
-          <div class="eyebrow">Кодинг без облака · версия 0.2.6</div>
-          <h1>Твой ИИ.<br><span class="gradient">Твой код.</span></h1>
-          <p class="lead">CCode — локальный Android-ассистент для создания скриптов, Godot-проектов и многофайловых приложений прямо на телефоне.</p>
-          <div class="actions"><a class="button primary" href="https://github.com/wincatik/CCode/releases/download/v0.2.6/CCode-0.2.6.apk">Скачать APK 0.2.6</a><a class="button secondary" href="https://github.com/wincatik/CCode">Открыть исходники</a></div>
+           <div class="eyebrow">Coding without the cloud · version 0.2.6</div>
+           <h1>Your AI.<br><span class="gradient">Your code.</span></h1>
+           <p class="lead">CCode — a local Android assistant for creating scripts, Godot projects and multi-file apps right on your phone.</p>
+           <div class="actions"><a class="button primary" href="https://github.com/wincatik/CCode/releases/download/v0.2.6/CCode-0.2.6.apk">Download APK 0.2.6</a><a class="button secondary" href="https://github.com/wincatik/CCode">View source</a></div>
         </div>
-        <div class="terminal" aria-label="Пример работы CCode"><div class="dots"><i class="dot"></i><i class="dot"></i><i class="dot"></i></div><pre><span class="purple">ccode</span> <span class="blue">build</span> --project godot
+         <div class="terminal" aria-label="Example of CCode in action"><div class="dots"><i class="dot"></i><i class="dot"></i><i class="dot"></i></div><pre><span class="purple">ccode</span> <span class="blue">build</span> --project godot
 
-<span class="green">✓</span> Анализирую задачу
-<span class="green">✓</span> Создаю main.gd
-<span class="green">✓</span> Создаю player.gd
-<span class="green">✓</span> Проверяю файлы
+<span class="green">✓</span> Analyzing task
+<span class="green">✓</span> Creating main.gd
+<span class="green">✓</span> Creating player.gd
+<span class="green">✓</span> Checking files
 
-<span class="purple">Проект готов.</span>
-<span class="green">2 файла · 4.8 KB</span></pre></div>
+<span class="purple">Project ready.</span>
+<span class="green">2 files · 4.8 KB</span></pre></div>
       </section>
       <section id="features">
-        <div class="section-head"><h2>Сделан для<br>реальных задач</h2><p>Не просто чат с текстом. CCode понимает проекты, файлы и процесс разработки.</p></div>
+        <div class="section-head"><h2>Made for<br>real-world tasks</h2><p>Not just a text chat. CCode understands projects, files and the development workflow.</p></div>
         <div class="grid">
-          <article class="card"><div class="icon">⌘</div><h3>Локальная модель</h3><p>Code 1.0, Lite, Fast и Balanced работают на устройстве без обязательной отправки кода в облако.</p></article>
-          <article class="card"><div class="icon">▤</div><h3>Настоящие файлы</h3><p>Генерация отдельных файлов, ZIP-проектов и экспорт чатов в формате .ccode.</p></article>
-          <article class="card"><div class="icon">↗</div><h3>Рабочий процесс</h3><p>Панель активности показывает анализ, создание файлов, поиск документации и результат.</p></article>
-          <article class="card"><div class="icon">⌕</div><h3>Документация в сети</h3><p>Когда нужен свежий гайд, CCode может искать реальные страницы и показывать источники.</p></article>
-          <article class="card"><div class="icon">◫</div><h3>Godot и Python</h3><p>Подходит для GDScript 2.0, Python и других языков, на которых ты создаёшь свои проекты.</p></article>
-          <article class="card"><div class="icon">▣</div><h3>Для телефона</h3><p>Минималистичный тёмный интерфейс, оптимизация под устройства с 4 ГБ оперативной памяти.</p></article>
+          <article class="card"><div class="icon">⌘</div><h3>Local model</h3><p>Code 1.0, Lite, Fast and Balanced run on-device without mandatory uploading of code to the cloud.</p></article>
+          <article class="card"><div class="icon">▤</div><h3>Real files</h3><p>Generation of individual files, ZIP projects and chat export in .ccode format.</p></article>
+          <article class="card"><div class="icon">↗</div><h3>Workflow</h3><p>The activity panel shows analysis, file creation, documentation search and the result.</p></article>
+          <article class="card"><div class="icon">⌕</div><h3>Online documentation</h3><p>When you need an up-to-date guide, CCode can search real pages and show sources.</p></article>
+          <article class="card"><div class="icon">◫</div><h3>Godot and Python</h3><p>Suitable for GDScript 2.0, Python and other languages you use to create your projects.</p></article>
+          <article class="card"><div class="icon">▣</div><h3>For phones</h3><p>Minimalist dark interface, optimized for devices with 4 GB of RAM.</p></article>
         </div>
       </section>
-      <section id="download"><div class="download"><div><h2>Попробуй CCode</h2><p>Официальные сборки и исходный код находятся на GitHub.</p></div><a class="button primary" href="https://github.com/wincatik/CCode/releases/latest">Перейти к релизам →</a></div></section>
+      <section id="download"><div class="download"><div><h2>Try CCode</h2><p>Official builds and source code are on GitHub.</p></div><a class="button primary" href="https://github.com/wincatik/CCode/releases/latest">Go to releases →</a></div></section>
     </main>
-    <footer><span>© 2026 CCode · wincatik + Manus AI</span><span>Локальный ИИ для мобильной разработки</span></footer>
+    <footer><span>© 2026 CCode · wincatik + Manus AI</span><span>Local AI for mobile development</span></footer>
   </div>
 </body>
 </html>

@@ -28,13 +28,13 @@ object HtmlApkBuilder {
 
     fun build(context: Context, project: WorkspaceProject, options: BuildOptions = BuildOptions(project.name, "com.ccode.htmlbuilder", "1.0", 1)): File {
         val index = project.files.firstOrNull { it.path.equals("index.html", true) || it.path.endsWith("/index.html", true) }
-            ?: error("HTML-проект должен содержать index.html")
+?: error("HTML project must contain index.html")
         val workDir = File(context.cacheDir, "html-build-${System.currentTimeMillis()}").apply { mkdirs() }
         val unsigned = File(workDir, "${safeName(project.name)}-unsigned.apk")
         val outputDir = File(context.filesDir, "workspace/${project.id}").apply { mkdirs() }
-        require(options.packageName.matches(Regex("[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+"))) { "Неверный package name" }
-        require(options.versionName.matches(Regex("[0-9]+(\\.[0-9]+){0,3}"))) { "Неверная версия" }
-        require(options.versionCode > 0) { "Version code должен быть больше нуля" }
+require(options.packageName.matches(Regex("[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+"))) { "Invalid package name" }
+require(options.versionName.matches(Regex("[0-9]+(\\.[0-9]+){0,3}"))) { "Invalid version" }
+require(options.versionCode > 0) { "Version code must be greater than zero" }
         val output = File(outputDir, nextOutputName(outputDir, options.appName, options.versionName))
         try {
             context.assets.open(TEMPLATE_ASSET).use { input -> unsigned.outputStream().use { input.copyTo(it) } }
@@ -96,7 +96,7 @@ object HtmlApkBuilder {
             }
             val payload = File(workDir, "payload.apk")
             sign(context, payload, output)
-            if (!output.exists() || output.length() < 4096) error("APK не был создан")
+if (!output.exists() || output.length() < 4096) error("APK was not created")
             return output
         } finally {
             workDir.deleteRecursively()
@@ -120,7 +120,7 @@ object HtmlApkBuilder {
             if (type == 0x0001 && p + 28 <= out.size) {
                 val count = leInt(out, p + 8); val flags = leInt(out, p + 16); val start = leInt(out, p + 20)
                 if (flags and 0x100 != 0) error("Manifest string pool UTF-8 format is unsupported")
-                for (i in 0 until count) { val pos = p + start + leInt(out, p + 28 + i * 4); if (pos + 2 > out.size) continue; val len = leShort(out, pos); val text = String(out, pos + 2, len * 2, Charsets.UTF_16LE); val replacement = when { text == "com.ccode.htmlbuilder" -> options.packageName.also { foundPackage = true }; text == "1.0" -> options.versionName.also { foundVersion = true }; text == "CCode HTML App" || text.startsWith("CCode HTML App [Custom App Name Placeholder") -> options.appName else -> null }; if (replacement != null) { require(replacement.length <= len) { "Название приложения слишком длинное: максимум $len символов" }; out[pos] = replacement.length.toByte(); out[pos + 1] = 0; java.util.Arrays.fill(out, pos + 2, pos + 2 + len * 2, 0); replacement.toByteArray(Charsets.UTF_16LE).copyInto(out, pos + 2) } }
+for (i in 0 until count) { val pos = p + start + leInt(out, p + 28 + i * 4); if (pos + 2 > out.size) continue; val len = leShort(out, pos); val text = String(out, pos + 2, len * 2, Charsets.UTF_16LE); val replacement = when { text == "com.ccode.htmlbuilder" -> options.packageName.also { foundPackage = true }; text == "1.0" -> options.versionName.also { foundVersion = true }; text == "CCode HTML App" || text.startsWith("CCode HTML App [Custom App Name Placeholder") -> options.appName else -> null }; if (replacement != null) { require(replacement.length <= len) { "Application name too long: maximum $len characters" }; out[pos] = replacement.length.toByte(); out[pos + 1] = 0; java.util.Arrays.fill(out, pos + 2, pos + 2 + len * 2, 0); replacement.toByteArray(Charsets.UTF_16LE).copyInto(out, pos + 2) } }
             }
             if (size <= 0) break; p += size
         }
@@ -130,7 +130,7 @@ object HtmlApkBuilder {
             out[data] = options.versionCode.toByte(); out[data + 1] = (options.versionCode shr 8).toByte(); out[data + 2] = (options.versionCode shr 16).toByte(); out[data + 3] = (options.versionCode shr 24).toByte()
             break
         }
-        require(foundPackage && foundVersion) { "Не удалось обновить package/version в Manifest" }
+require(foundPackage && foundVersion) { "Failed to update package/version in Manifest" }
         return out
     }
     private fun leInt(b: ByteArray, p: Int) = (b[p].toInt() and 255) or ((b[p+1].toInt() and 255) shl 8) or ((b[p+2].toInt() and 255) shl 16) or ((b[p+3].toInt() and 255) shl 24)

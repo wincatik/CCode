@@ -1,71 +1,71 @@
 # CCode
 
-**CCode — локальный Android-ИИ-ассистент для мобильного кодинга.**
+**CCode — local Android AI assistant for mobile coding.**
 
-Проект помогает создавать полноценные исходные файлы и небольшие многофайловые проекты прямо на телефоне. CCode работает с локальными моделями Code 1.0 и Code 1.0 Lite на базе Qwen2.5-Coder.
+The project helps create complete source files and small multi-file projects directly on your phone. CCode works with local models Code 1.0 and Code 1.0 Lite based on Qwen2.5-Coder.
 
-## Текущая версия — 0.2.6
+## Current version — 0.2.6
 
-APK 0.2.6 содержит:
+APK 0.2.6 contains:
 
-- чаты и историю диалогов;
-- разделы **Чаты**, **Файлы** и **Настройки**;
-- тёмный минималистичный интерфейс;
-- локальные модели **Code 1.0 (3B)**, **Code 1.0 Lite (1.5B)**, **Code 1.0 Balanced (1.5B)** и **Code 1.0 Fast (0.5B)**;
-- загрузку моделей внутри приложения;
-- генерацию полноценных файлов, а не только фрагментов кода;
-- поддержку Python, Godot 4.x / GDScript 2.0 и других текстовых исходников;
-- создание многофайловых проектов с карточкой проекта;
-- скачивание отдельных файлов;
-- экспорт проекта в ZIP;
-- экспорт чата в формат `.ccode`;
-- прикрепление и анализ скриптов, ZIP-архивов и APK-файлов;
-- веб-поиск документации с загрузкой содержимого страниц и источниками;
-- панель активности в стиле Manus: анализ запроса, планирование файлов, поиск, написание и проверка;
-- остановку генерации кнопкой-крестиком;
-- потоковый вывод ответа;
-- статистику сообщений, чатов и активности;
-- историю чатов;
-- голосовой ввод через микрофон;
-- уведомления;
-- виджет с активностью и streak;
-- оптимизации для устройств с 4 ГБ оперативной памяти.
+- chats and conversation history;
+- sections **Chats**, **Files**, and **Settings**;
+- dark minimalist interface;
+- local models **Code 1.0 (3B)**, **Code 1.0 Lite (1.5B)**, **Code 1.0 Balanced (1.5B)**, and **Code 1.0 Fast (0.5B)**;
+- in-app model downloads;
+- generation of full files, not only code snippets;
+- support for Python, Godot 4.x / GDScript 2.0, and other text source files;
+- creation of multi-file projects with a project card;
+- downloading individual files;
+- export project to ZIP;
+- export chat to `.ccode` format;
+- attaching and analyzing scripts, ZIP archives, and APK files;
+- web documentation search with page content download and sources;
+- Manus-style activity panel: request analysis, file planning, search, writing, and verification;
+- stopping generation with an X button;
+- streaming response output;
+- statistics of messages, chats, and activity;
+- chat history;
+- voice input via microphone;
+- notifications;
+- activity widget with streak;
+- optimizations for devices with 4 GB of RAM.
 
-> В 0.2.6 добавлен экспериментальный HTML/APK Builder для локальной подготовки APK-проектов.
+> In 0.2.6 an experimental HTML/APK Builder was added for local preparation of APK projects.
 
-## Скачать
+## Download
 
-- [Скачать CCode 0.2.6 APK](https://github.com/wincatik/CCode/releases/download/v0.2.6/CCode-0.2.6.apk)
-- [Открыть все Releases](https://github.com/wincatik/CCode/releases)
+- [Download CCode 0.2.6 APK](https://github.com/wincatik/CCode/releases/download/v0.2.6/CCode-0.2.6.apk)
+- [View all Releases](https://github.com/wincatik/CCode/releases)
 
-Для установки APK разреши установку приложений из неизвестных источников в настройках Android. Это подписанная release-сборка для публикации в RuStore. Предыдущая версия 0.2.5 сохранена в отдельном релизе.
+To install the APK, allow installation of apps from unknown sources in Android settings. This is a signed release build for publication on RuStore. The previous version 0.2.5 is preserved in a separate release.
 
-## Сайт
+## Website
 
-- [Официальный сайт CCode](https://wincatik.github.io/CCode/)
+- [Official CCode website](https://wincatik.github.io/CCode/)
 
-## Исходный код
+## Source code
 
-- [Репозиторий GitHub](https://github.com/wincatik/CCode)
-- [Полный исходный Android-проект](https://github.com/wincatik/CCode/tree/main/android-app)
-- [Страница Issues](https://github.com/wincatik/CCode/issues)
+- [GitHub repository](https://github.com/wincatik/CCode)
+[Full Android project source](https://github.com/wincatik/CCode/tree/main/android-app)
+[Issues page](https://github.com/wincatik/CCode/issues)
 
-Исходный проект сохранён в папке `android-app`. В него входят Kotlin/Compose-интерфейс, C++/JNI-мост, настройки Gradle и native-библиотеки, необходимые для сборки. Временные папки `build/` и `.gradle/` намеренно исключены.
+The source project is stored in the `android-app` folder. It includes a Kotlin/Compose UI, a C++/JNI bridge, Gradle settings, and the native libraries required for building. Temporary folders `build/` and `.gradle/` are intentionally excluded.
 
-## Техническая основа
+## Technical foundation
 
-- Kotlin и Jetpack Compose;
-- C++17 и JNI;
+- Kotlin and Jetpack Compose;
+- C++17 and JNI;
 - llama.cpp;
-- GGUF-модели Qwen2.5-Coder;
+- GGUF models Qwen2.5-Coder;
 - Android NDK/SDK;
 - Gradle 8.7.
 
-## Авторы
+## Authors
 
-- **Создатель CCode:** wincatik
-- **AI-соавтор и технический помощник:** Manus AI
+- **Creator of CCode:** wincatik
+- **AI co-author and technical assistant:** Manus AI
 
-## Лицензия
+## License
 
-Лицензия проекта будет добавлена перед публичным релизом. До этого момента исходный код предоставляется для ознакомления.
+The project's license will be added prior to public release. Until then, the source code is provided for review.

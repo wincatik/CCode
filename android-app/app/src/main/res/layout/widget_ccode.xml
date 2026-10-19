@@ -46,7 +46,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:gravity="bottom"
-        android:text="Готов к работе"
+        android:text="Ready to work"
         android:textColor="#8B8C91"
         android:textSize="12sp" />
 
@@ -55,6 +55,6 @@
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_marginTop="10dp"
-        android:text="Открыть CCode"
+        android:text="Open CCode"
         android:textAllCaps="false" />
 </LinearLayout>

@@ -17,10 +17,10 @@ static llama_model * g_model = nullptr;
 static llama_context * g_ctx = nullptr;
 static llama_sampler * g_sampler = nullptr;
 static std::atomic<bool> g_cancelRequested{false};
-// 1536 токенов обрывает многофайловые Godot/HTML-проекты. 3072 оставляет
-// достаточно места для истории и кода, оставаясь приемлемым для 4 ГБ ОЗУ.
+// 1536 tokens truncates multi-file Godot/HTML projects. 3072 leaves
+// enough room for history and code while remaining acceptable for 4 GB RAM.
 static constexpr uint32_t kContextSize = 3072;
-// Уменьшенный batch снижает кратковременные пики CPU/RAM на телефонах.
+// Reduced batch lowers short-term CPU/RAM spikes on phones.
 static constexpr uint32_t kBatchSize = 128;
 
 static size_t completeUtf8Prefix(const std::string & text) {
@@ -69,8 +69,8 @@ Java_com_ccode_code_LocalCodeEngine_nativeLoadModel(JNIEnv * env, jobject, jstri
     auto contextParams = llama_context_default_params();
     contextParams.n_ctx = kContextSize;
     contextParams.n_batch = kBatchSize;
-    // Шесть потоков забирали все доступные big-ядерные ресурсы. Четыре дают
-    // более ровную нагрузку и оставляют CPU для интерфейса и ОС.
+    // Six threads consumed all available big-core resources. Four provide
+    // a more even load and leave CPU for UI and OS.
     constexpr int cpuThreads = 4;
     contextParams.n_threads = cpuThreads;
     contextParams.n_threads_batch = cpuThreads;
@@ -98,9 +98,9 @@ Java_com_ccode_code_LocalCodeEngine_nativeIsLoaded(JNIEnv *, jobject) {
 
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_ccode_code_LocalCodeEngine_nativeGenerateStreaming(JNIEnv * env, jobject, jstring prompt, jobject listener) {
-    if (!g_model || !g_ctx || !g_sampler) return env->NewStringUTF("Модель ещё не загружена.");
+    if (!g_model || !g_ctx || !g_sampler) return env->NewStringUTF("Model not loaded yet.");
     const std::string input = jstringToString(env, prompt);
-    if (input.empty()) return env->NewStringUTF("Пустой запрос.");
+    if (input.empty()) return env->NewStringUTF("Empty request.");
     llama_memory_clear(llama_get_memory(g_ctx), true);
     llama_sampler_reset(g_sampler);
     const llama_vocab * vocab = llama_model_get_vocab(g_model);
@@ -110,18 +110,18 @@ Java_com_ccode_code_LocalCodeEngine_nativeGenerateStreaming(JNIEnv * env, jobjec
     int32_t tokenCount = llama_tokenize(vocab, input.c_str(), static_cast<int32_t>(input.size()), tokens.data(), tokenCapacity, false, true);
     if (tokenCount < 0) {
         LOGE("Prompt token count=%d exceeds safe capacity=%d", -tokenCount, tokenCapacity);
-        return env->NewStringUTF("Запрос слишком длинный для текущего контекста.");
+        return env->NewStringUTF("Request too long for current context.");
     }
-    if (tokenCount <= 0) return env->NewStringUTF("Не удалось обработать запрос.");
+    if (tokenCount <= 0) return env->NewStringUTF("Failed to process request.");
     if (static_cast<uint32_t>(tokenCount) >= contextLimit - 32) {
         LOGE("Prompt rejected: %d tokens, context=%u", tokenCount, contextLimit);
-        return env->NewStringUTF("Запрос слишком длинный для текущего контекста.");
+        return env->NewStringUTF("Request too long for current context.");
     }
 
     llama_batch batch = llama_batch_init(kBatchSize, 0, 1);
     if (!batch.token || !batch.pos || !batch.seq_id || !batch.logits) {
         LOGE("Could not allocate llama batch: size=%u", kBatchSize);
-        return env->NewStringUTF("Не удалось выделить память для запроса.");
+        return env->NewStringUTF("Failed to allocate memory for request.");
     }
     std::string output;
     std::string pendingUtf8;
@@ -139,7 +139,7 @@ Java_com_ccode_code_LocalCodeEngine_nativeGenerateStreaming(JNIEnv * env, jobjec
         if (llama_decode(g_ctx, batch) != 0) {
             LOGE("llama_decode failed for prompt batch offset=%d count=%d", offset, count);
             llama_batch_free(batch);
-            return env->NewStringUTF("Ошибка обработки запроса. Подробности записаны в журнале.");
+            return env->NewStringUTF("Error processing request. Details logged.");
         }
     }
     const auto promptEnd = std::chrono::steady_clock::now();
@@ -149,7 +149,7 @@ Java_com_ccode_code_LocalCodeEngine_nativeGenerateStreaming(JNIEnv * env, jobjec
     const std::string marker = "<|im_start|>user\n";
     const size_t userStart = input.find(marker);
     const size_t userLength = userStart == std::string::npos ? input.size() : input.size() - userStart - marker.size();
-    const bool codeRequest = input.find("python") != std::string::npos || input.find("Python") != std::string::npos || input.find("Godot") != std::string::npos || input.find("гдскрипт") != std::string::npos || input.find("скрипт") != std::string::npos || input.find("игр") != std::string::npos || input.find("полный файл") != std::string::npos || input.find("код") != std::string::npos;
+    const bool codeRequest = input.find("python") != std::string::npos || input.find("Python") != std::string::npos || input.find("Godot") != std::string::npos || input.find("gdscript") != std::string::npos || input.find("script") != std::string::npos || input.find("game") != std::string::npos || input.find("full file") != std::string::npos || input.find("code") != std::string::npos;
     const int requestedMaxTokens = codeRequest ? 768 : (userLength < 80 ? 64 : (userLength < 180 ? 192 : 320));
     const int maxNewTokens = std::max(1, std::min(requestedMaxTokens, static_cast<int>(contextLimit) - tokenCount - 1));
     jclass listenerClass = listener ? env->GetObjectClass(listener) : nullptr;

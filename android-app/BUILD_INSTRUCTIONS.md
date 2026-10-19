@@ -1,38 +1,38 @@
-# CCode — обновлённый Android-проект
+# CCode — updated Android project
 
-## Что изменено
+## What's changed
 
-- Добавлена отдельная нижняя навигация: **Чаты / Файлы / Настройки**.
-- История чатов открывается отдельным экраном с поиском по названию, созданием, открытием и удалением чатов.
-- Добавлен раздел файлов: имя, расширение, размер, связанный чат, просмотр содержимого и скачивание.
-- Сохранён экспорт отдельных файлов и ZIP-проектов.
-- Добавлены настройки Code 1.0 / Code 1.0 Lite, лимита веб-источников, отображения активности, полностью чёрного фона по умолчанию и цветов фона/акцента через RGB-слайдеры.
-- Добавлен выбор фирменного знака в шапке: CCode, Claude, Gemini и ChatGPT; элементы интерфейса используют выбранный акцентный цвет.
-- Добавлена панель Info со статистикой первого сообщения, streak, количеством сообщений, ответов и чатов.
-- Добавлен отдельный Markdown-экспорт текущего чата; формат `.ccode` для полного резервного копирования сохранён.
-- У сообщений появилась кнопка копирования, а созданные файлы можно редактировать и сохранять обратно в проект.
-- В истории чатов добавлены закрепление/открепление и переименование; закреплённые чаты сортируются сверху и сохраняются между запусками.
-- История чатов теперь сохраняет проекты и веб-источники в `filesDir/chats.json`.
-- Исправлен экспорт `.ccode`: имя больше не получает лишний `.json`, импорт понимает полный экспорт чатов/проектов и старый формат.
-- Исправлено скачивание файлов: исходные расширения (`.py`, `.gd`, `.html`, `.ccode` и другие) сохраняются.
-- Добавлены гарантированные каркасы Godot 4.x и HTML-проектов с обязательными файлами и ZIP-экспортом.
-- Изображения из скрепки можно добавлять в проект как бинарные ресурсы `assets/...` для иконок, спрайтов и других ассетов; они включаются в ZIP.
-- ZIP- и APK-вложения распаковываются локально во внутреннее хранилище приложения, отображаются в разделе «Файлы» с деревом содержимого и сохраняются между запусками.
-- При упоминании имени или проекта в новом чате подходящие сохранённые файлы добавляются в локальный контекст Code 1.0 для объяснения структуры и назначения.
-- Полный `.ccode` переносит историю, настройки, статистику и сохранённые распакованные проекты вместе с ресурсами.
-- HTML-папка с `index.html` получает кнопку «Собрать APK» в разделе «Файлы». CCode использует лёгкий локальный WebView-шаблон, помещает проект в `assets/www/`, создаёт подписанный APK и сохраняет его рядом с исходниками как `Project.apk` или `Project-updated-N.apk`.
-- HTML APK builder не требует Termux и не загружает гигабайтный SDK для первого режима: базовый шаблон встроен в CCode. Созданные APK подписываются отдельным ключом Android Keystore CCode.
-- `ccode_jni.cpp`, потоковая генерация, отмена, llama.cpp, GGUF, веб-поиск, FILE-парсер, микрофон, уведомления и виджет сохранены.
-- Использованы компактные белые/синие glyph-иконки в стиле предоставленного референса; изображение референса не используется как иконка приложения.
+- Added a separate bottom navigation: **Chats / Files / Settings**.
+- Chat history opens in a separate screen with search by name, creation, opening, and deletion of chats.
+- Added a Files section: name, extension, size, associated chat, content preview and download.
+- Export of individual files and ZIP projects preserved.
+- Added settings for Code 1.0 / Code 1.0 Lite, web-sources limit, activity display, a fully black default background, and background/accent colors via RGB sliders.
+- Added selection of brand badge in the header: CCode, Claude, Gemini and ChatGPT; UI elements use the chosen accent color.
+- Added an Info panel with statistics for first message, streak, number of messages, replies and chats.
+- Added a separate Markdown export for the current chat; the `.ccode` format for full backups is retained.
+- Messages now have a copy button, and created files can be edited and saved back into the project.
+- Pin/unpin and rename added in chat history; pinned chats are sorted to the top and persisted between launches.
+- Chat history now stores projects and web sources in `filesDir/chats.json`.
+- Fixed `.ccode` export: name no longer gets an extra `.json`, import understands full export of chats/projects and the old format.
+- Fixed file downloads: original extensions (`.py`, `.gd`, `.html`, `.ccode` and others) are preserved.
+- Added guaranteed scaffolds for Godot 4.x and HTML projects with required files and ZIP export.
+- Images from the paperclip can be added to the project as binary resources `assets/...` for icons, sprites and other assets; they are included in the ZIP.
+- ZIP and APK attachments are unpacked locally into the app's internal storage, displayed in the Files section with a content tree, and persisted between launches.
+- When a name or project is mentioned in a new chat, matching saved files are added to the local Code 1.0 context to explain structure and purpose.
+- A full `.ccode` transfers history, settings, statistics and saved unpacked projects along with resources.
+- An HTML folder with `index.html` gets a 'Build APK' button in the Files section. CCode uses a lightweight local WebView template, places the project in `assets/www/`, creates a signed APK and saves it next to the sources as `Project.apk` or `Project-updated-N.apk`.
+- The HTML APK builder does not require Termux and does not download a gigabyte SDK for the first mode: the basic template is built into CCode. Created APKs are signed with a separate CCode Android Keystore key.
+- `ccode_jni.cpp`, streaming generation, cancellation, llama.cpp, GGUF, web search, FILE-parser, microphone, notifications and widget preserved.
+- Compact white/blue glyph icons in the style of the provided reference are used; the reference image is not used as the app icon.
 
-## Сборка
+## Build
 
-Требуется Android Studio с Android SDK 35, NDK 26.1 и JDK 21.
+Requires Android Studio with Android SDK 35, NDK 26.1 and JDK 21.
 
 ```bash
 ./gradlew assembleDebug
 ```
 
-Профиль APK: `app/build/outputs/apk/debug/app-debug.apk`.
+APK profile: `app/build/outputs/apk/debug/app-debug.apk`.
 
-Проект собирается для `arm64-v8a`; нативные библиотеки уже находятся в `app/src/main/jniLibs/arm64-v8a/`.
+The project is built for `arm64-v8a`; native libraries are already located in `app/src/main/jniLibs/arm64-v8a/`.

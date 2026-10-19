@@ -31,11 +31,11 @@ class CCodeWidget : AppWidgetProvider() {
             val messages = settings.getInt("sent_count", 0)
             val streak = settings.getInt("current_streak", 0)
             val best = settings.getInt("best_streak", 0)
-            val status = settings.getString("widget_status", "Готов к работе") ?: "Готов к работе"
+val status = settings.getString("widget_status", "Ready") ?: "Ready"
             val views = RemoteViews(context.packageName, R.layout.widget_ccode).apply {
                 setTextViewText(R.id.widget_model, model)
-                setTextViewText(R.id.widget_stats, "Чатов: $chats · Сообщений: $messages")
-                setTextViewText(R.id.widget_streak, "Серия: $streak дней · Рекорд: $best")
+setTextViewText(R.id.widget_stats, "Chats: $chats · Messages: $messages")
+setTextViewText(R.id.widget_streak, "Streak: $streak days · Best: $best")
                 setTextViewText(R.id.widget_status, status)
                 val intent = Intent(context, MainActivity::class.java).apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP }
                 val pending = PendingIntent.getActivity(context, 3000 + id, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)

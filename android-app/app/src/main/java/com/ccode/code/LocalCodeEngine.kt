@@ -1,6 +1,6 @@
 package com.ccode.code
 
-/** Минимальная Kotlin-обёртка над локальным llama.cpp-движком. */
+/** Minimal Kotlin wrapper around the local llama.cpp engine. */
 object LocalCodeEngine {
     init {
         System.loadLibrary("ccode")
