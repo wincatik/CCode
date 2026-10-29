@@ -4,25 +4,17 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
-val ccodeKeystorePath = System.getenv("CCODE_KEYSTORE") ?: ""
-val ccodeKeystorePassword = System.getenv("CCODE_KEYSTORE_PASSWORD") ?: ""
-val ccodeKeyAlias = System.getenv("CCODE_KEY_ALIAS") ?: "ccode-release"
-
 android { namespace = "com.ccode.code"; compileSdk = 35
-    signingConfigs {
-        create("release") {
-            if (ccodeKeystorePath.isNotBlank()) {
-                storeFile = file(ccodeKeystorePath)
-                storePassword = ccodeKeystorePassword
-                keyAlias = ccodeKeyAlias
-                keyPassword = ccodeKeystorePassword
-            }
-        }
-    }
     defaultConfig {
         applicationId = "com.ccode.code"; minSdk = 31; targetSdk = 35; versionCode = 17; versionName = "0.2.6"
         ndk { abiFilters += "arm64-v8a" }
-        externalNativeBuild { cmake { cppFlags += "-std=c++17" } }
+        externalNativeBuild {
+            cmake {
+                cppFlags += "-std=c++17"
+                // GPU acceleration (Vulkan) support - set to OFF to disable
+                arguments += "-DENABLE_GPU_VULKAN=ON"
+            }
+        }
     }
     externalNativeBuild { cmake { path = file("src/main/cpp/CMakeLists.txt") } }
 }
@@ -31,12 +23,6 @@ kotlin { jvmToolchain(21) }
 
 android {
     buildFeatures { compose = true }
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("release")
-        }
-    }
 }
 
 dependencies {
