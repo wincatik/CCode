@@ -17,10 +17,10 @@ static llama_model * g_model = nullptr;
 static llama_context * g_ctx = nullptr;
 static llama_sampler * g_sampler = nullptr;
 static std::atomic<bool> g_cancelRequested{false};
-// 1536 tokens truncates multi-file Godot/HTML projects. 3072 leaves
-// enough room for history and code while remaining acceptable for 4 GB RAM.
-static constexpr uint32_t kContextSize = 3072;
-// Reduced batch lowers short-term CPU/RAM spikes on phones.
+// 1536 токенов обрывает многофайловые Godot/HTML-проекты. 3072 оставляет
+// достаточно места для истории и кода, оставаясь приемлемым для 4 ГБ ОЗУ.
+static constexpr uint32_t kContextSize = 8192;
+// Уменьшенный batch снижает кратковременные пики CPU/RAM на телефонах.
 static constexpr uint32_t kBatchSize = 128;
 
 static size_t completeUtf8Prefix(const std::string & text) {
@@ -59,7 +59,18 @@ Java_com_ccode_code_LocalCodeEngine_nativeLoadModel(JNIEnv * env, jobject, jstri
 
     llama_backend_init();
     auto modelParams = llama_model_default_params();
-    modelParams.n_gpu_layers = 0;
+
+    int32_t gpuLayers = 0;
+    const char* gpuBackend = "CPU";
+
+    #ifdef GGML_VULKAN
+    gpuLayers = 35;
+    gpuBackend = "Vulkan";
+    #endif
+
+    modelParams.n_gpu_layers = gpuLayers;
+    LOGE("Loading model with backend: %s (GPU layers: %d)", gpuBackend, gpuLayers);
+
     g_model = llama_model_load_from_file(modelPath.c_str(), modelParams);
     if (!g_model) {
         LOGE("Could not load model: %s", modelPath.c_str());
@@ -69,8 +80,8 @@ Java_com_ccode_code_LocalCodeEngine_nativeLoadModel(JNIEnv * env, jobject, jstri
     auto contextParams = llama_context_default_params();
     contextParams.n_ctx = kContextSize;
     contextParams.n_batch = kBatchSize;
-    // Six threads consumed all available big-core resources. Four provide
-    // a more even load and leave CPU for UI and OS.
+    // Шесть потоков забирали все доступные big-ядерные ресурсы. Четыре дают
+    // более ровную нагрузку и оставляют CPU для интерфейса и ОС.
     constexpr int cpuThreads = 4;
     contextParams.n_threads = cpuThreads;
     contextParams.n_threads_batch = cpuThreads;
@@ -84,9 +95,15 @@ Java_com_ccode_code_LocalCodeEngine_nativeLoadModel(JNIEnv * env, jobject, jstri
 
     auto samplerParams = llama_sampler_chain_default_params();
     g_sampler = llama_sampler_chain_init(samplerParams);
+    // Раньше в конце стоял greedy: он игнорирует температуру, ответы были одинаковыми и зацикливались.
+    // Теперь: top-k отсекает мусор, штраф за повторы бьёт по последним 256 сгенерированным токенам,
+    // температура и top-p дают небольшую вариативность, dist случайно выбирает токен.
+    const int32_t vocabSize = llama_vocab_n_tokens(llama_model_get_vocab(g_model));
     llama_sampler_chain_add(g_sampler, llama_sampler_init_top_k(40));
-    llama_sampler_chain_add(g_sampler, llama_sampler_init_temp(0.2f));
-    llama_sampler_chain_add(g_sampler, llama_sampler_init_greedy());
+    llama_sampler_chain_add(g_sampler, llama_sampler_init_penalties(vocabSize, 256, 1.1f, 0.0f, 0.0f));
+    llama_sampler_chain_add(g_sampler, llama_sampler_init_temp(0.35f));
+    llama_sampler_chain_add(g_sampler, llama_sampler_init_top_p(0.9f, 1));
+    llama_sampler_chain_add(g_sampler, llama_sampler_init_dist(static_cast<uint32_t>(std::chrono::steady_clock::now().time_since_epoch().count())));
     LOGE("Model loaded: ctx=%u batch=%u", kContextSize, kBatchSize);
     return JNI_TRUE;
 }
@@ -96,11 +113,27 @@ Java_com_ccode_code_LocalCodeEngine_nativeIsLoaded(JNIEnv *, jobject) {
     return (g_model != nullptr && g_ctx != nullptr) ? JNI_TRUE : JNI_FALSE;
 }
 
+// Зацикливание: хвост генерации — один и тот же блок токенов, повторённый не менее 4 раз (и не менее 96 токенов).
+// Возвращает, сколько токенов оставить (одна копия блока), либо 0, если цикла нет.
+static size_t keepBeforeLoop(const std::vector<llama_token> & g) {
+    const size_t n = g.size();
+    for (size_t p = 1; p <= 160; ++p) {
+        const size_t need = std::max<size_t>(p * 4, 96);
+        if (n < need) continue;
+        bool periodic = true;
+        for (size_t k = 0; k + p < need; ++k) {
+            if (g[n - 1 - k] != g[n - 1 - k - p]) { periodic = false; break; }
+        }
+        if (periodic) return n - (need - p);
+    }
+    return 0;
+}
+
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_ccode_code_LocalCodeEngine_nativeGenerateStreaming(JNIEnv * env, jobject, jstring prompt, jobject listener) {
-    if (!g_model || !g_ctx || !g_sampler) return env->NewStringUTF("Model not loaded yet.");
+    if (!g_model || !g_ctx || !g_sampler) return env->NewStringUTF("Модель ещё не загружена.");
     const std::string input = jstringToString(env, prompt);
-    if (input.empty()) return env->NewStringUTF("Empty request.");
+    if (input.empty()) return env->NewStringUTF("Пустой запрос.");
     llama_memory_clear(llama_get_memory(g_ctx), true);
     llama_sampler_reset(g_sampler);
     const llama_vocab * vocab = llama_model_get_vocab(g_model);
@@ -110,18 +143,18 @@ Java_com_ccode_code_LocalCodeEngine_nativeGenerateStreaming(JNIEnv * env, jobjec
     int32_t tokenCount = llama_tokenize(vocab, input.c_str(), static_cast<int32_t>(input.size()), tokens.data(), tokenCapacity, false, true);
     if (tokenCount < 0) {
         LOGE("Prompt token count=%d exceeds safe capacity=%d", -tokenCount, tokenCapacity);
-        return env->NewStringUTF("Request too long for current context.");
+        return env->NewStringUTF("Запрос слишком длинный для текущего контекста.");
     }
-    if (tokenCount <= 0) return env->NewStringUTF("Failed to process request.");
+    if (tokenCount <= 0) return env->NewStringUTF("Не удалось обработать запрос.");
     if (static_cast<uint32_t>(tokenCount) >= contextLimit - 32) {
         LOGE("Prompt rejected: %d tokens, context=%u", tokenCount, contextLimit);
-        return env->NewStringUTF("Request too long for current context.");
+        return env->NewStringUTF("Запрос слишком длинный для текущего контекста.");
     }
 
     llama_batch batch = llama_batch_init(kBatchSize, 0, 1);
     if (!batch.token || !batch.pos || !batch.seq_id || !batch.logits) {
         LOGE("Could not allocate llama batch: size=%u", kBatchSize);
-        return env->NewStringUTF("Failed to allocate memory for request.");
+        return env->NewStringUTF("Не удалось выделить память для запроса.");
     }
     std::string output;
     std::string pendingUtf8;
@@ -139,7 +172,7 @@ Java_com_ccode_code_LocalCodeEngine_nativeGenerateStreaming(JNIEnv * env, jobjec
         if (llama_decode(g_ctx, batch) != 0) {
             LOGE("llama_decode failed for prompt batch offset=%d count=%d", offset, count);
             llama_batch_free(batch);
-            return env->NewStringUTF("Error processing request. Details logged.");
+            return env->NewStringUTF("Ошибка обработки запроса. Подробности записаны в журнале.");
         }
     }
     const auto promptEnd = std::chrono::steady_clock::now();
@@ -149,8 +182,8 @@ Java_com_ccode_code_LocalCodeEngine_nativeGenerateStreaming(JNIEnv * env, jobjec
     const std::string marker = "<|im_start|>user\n";
     const size_t userStart = input.find(marker);
     const size_t userLength = userStart == std::string::npos ? input.size() : input.size() - userStart - marker.size();
-    const bool codeRequest = input.find("python") != std::string::npos || input.find("Python") != std::string::npos || input.find("Godot") != std::string::npos || input.find("gdscript") != std::string::npos || input.find("script") != std::string::npos || input.find("game") != std::string::npos || input.find("full file") != std::string::npos || input.find("code") != std::string::npos;
-    const int requestedMaxTokens = codeRequest ? 768 : (userLength < 80 ? 64 : (userLength < 180 ? 192 : 320));
+    const bool codeRequest = input.find("python") != std::string::npos || input.find("Python") != std::string::npos || input.find("Godot") != std::string::npos || input.find("гдскрипт") != std::string::npos || input.find("скрипт") != std::string::npos || input.find("игр") != std::string::npos || input.find("полный файл") != std::string::npos || input.find("код") != std::string::npos;
+    const int requestedMaxTokens = codeRequest ? 3072 : (userLength < 80 ? 64 : (userLength < 180 ? 192 : 320));
     const int maxNewTokens = std::max(1, std::min(requestedMaxTokens, static_cast<int>(contextLimit) - tokenCount - 1));
     jclass listenerClass = listener ? env->GetObjectClass(listener) : nullptr;
     jmethodID onToken = listenerClass ? env->GetMethodID(listenerClass, "onToken", "(Ljava/lang/String;)V") : nullptr;
@@ -159,11 +192,13 @@ Java_com_ccode_code_LocalCodeEngine_nativeGenerateStreaming(JNIEnv * env, jobjec
     g_cancelRequested.store(false);
     const auto generationStart = std::chrono::steady_clock::now();
     int generatedTokens = 0;
+    std::vector<llama_token> generated;
+    std::vector<size_t> outputEnds;
     for (int i = 0; i < maxNewTokens; ++i, ++position) {
         if (g_cancelRequested.load()) break;
         const llama_token next = llama_sampler_sample(g_sampler, g_ctx, -1);
         llama_sampler_accept(g_sampler, next);
-        if (next == eos) break;
+        if (next == eos || llama_vocab_is_eog(vocab, next)) break;
         ++generatedTokens;
         char piece[256];
         const int n = llama_token_to_piece(vocab, next, piece, sizeof(piece), 0, false);
@@ -178,6 +213,16 @@ Java_com_ccode_code_LocalCodeEngine_nativeGenerateStreaming(JNIEnv * env, jobjec
                     env->DeleteLocalRef(token);
                     pendingUtf8.erase(0, complete);
                 }
+            }
+        }
+        generated.push_back(next);
+        outputEnds.push_back(output.size());
+        if (generated.size() >= 96) {
+            const size_t keep = keepBeforeLoop(generated);
+            if (keep > 0) {
+                LOGE("Repetition loop detected after %d tokens, keeping %zu", generatedTokens, keep);
+                output.resize(outputEnds[keep - 1]);
+                break;
             }
         }
         if (listener && onProgress) env->CallVoidMethod(listener, onProgress, (i + 1) * 100 / maxNewTokens);
